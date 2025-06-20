@@ -13,4 +13,7 @@ for frame in range(100):
         sample_particle = emitter.particles[0]
         print(f"  Sample particle: pos=({sample_particle.x:.1f}, {sample_particle.y:.1f}), "
               f"life={sample_particle.life:.2f}, alpha={sample_particle.color[3]:.2f}")
+        
+        
+
     
