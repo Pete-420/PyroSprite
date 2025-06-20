@@ -1,6 +1,7 @@
 import random
 import math
 from .particle import Particle
+from .config import FIRE_COLORS
 
 class Emitter:
     def __init__(self, x, y, emit_rate=10):
@@ -12,10 +13,10 @@ class Emitter:
     def emit(self):
         # simple particle emission logic, random vector and speed and life
         angle = random.uniform(0, 2 * 3.14159)  # Random angle in radians
-        speed = random.uniform(0.5, 2.0)  # Random speed
+        speed = random.uniform(0.5, 2.0)
         vx = speed * math.cos(angle)
         vy = speed * math.sin(angle)
-        life = random.uniform(1.0, 3.0)  # Random life
+        life = random.uniform(1.0, 3.0)
         particle = Particle(
             self.x, 
             self.y, 
@@ -23,7 +24,7 @@ class Emitter:
             vy, 
             life, 
             size=random.uniform(0.5, 2.0),  # Random size
-            color=(random.random(), random.random(), random.random(), 1.0)  # Random color
+            color = FIRE_COLORS[random.randint(0, len(FIRE_COLORS) - 1)]  # Random color from FIRE_COLORS
         )
         self.particles.append(particle)
     def update(self, dt):

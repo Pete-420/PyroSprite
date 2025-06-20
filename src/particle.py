@@ -5,14 +5,19 @@ class Particle:
         self.vx = vx
         self.vy = vy
         self.life = life
+        self.max_life = life
         self.size = size
         self.color = color
+        self.gravity = -10  # Gravity effect on the particle
     def update(self, dt):
+        self.vy += self.gravity * dt
         self.x += self.vx * dt
         self.y += self.vy * dt
         self.life -= dt
         if self.life < 0:
             self.life = 0
+        alpha = self.life / self.max_life
+        self.color = (self.color[0], self.color[1], self.color[2], alpha)
     def is_alive(self):
         return self.life > 0    
     
