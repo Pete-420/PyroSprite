@@ -102,5 +102,5 @@ def render():
     pygame.quit()
     sys.exit()
 
-if __name__ == "render":
+if __name__ == "__main__":
     render()
