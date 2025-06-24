@@ -6,12 +6,12 @@ import numpy as np
 import sys
 
 from src.emitter import *
-from background import *
+from src.background import *
 
 def main():
     pygame.init()
 
-    render(particle_overlay_callback=particle_overlay)
+    render()
     
     pygame.quit()
     sys.exit()

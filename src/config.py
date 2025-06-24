@@ -12,3 +12,6 @@ PARTICLE_CONFIG = {
 
 
 #TOdo screen resolution etc.    
+width = 1920
+height = 1080
+
