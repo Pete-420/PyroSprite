@@ -10,8 +10,8 @@ from background import *
 
 def main():
     pygame.init()
+
     render(particle_overlay_callback=particle_overlay)
-    
     
     pygame.quit()
     sys.exit()
