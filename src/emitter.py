@@ -1,5 +1,6 @@
 import random
 import math
+import time
 from .particle import Particle
 from .config import FIRE_COLORS
 
@@ -11,23 +12,59 @@ class Emitter:
         self.particles = []
         self.emit_accum = 0  # accumulated time for emission
     def emit(self):
-        # simple particle emission logic, random vector and speed and life
-        #angle = random.uniform(0, 2 * 3.14159)  # Random angle in radians
-        angle = random.uniform(-math.pi / 4, math.pi / 4)  # Limit angle to a range for upward emission
+        # === KROK 2: Emisja z szerokiej podstawy ===
+        # Emisja z szerokiej podstawy zamiast punktu
+        base_width = 30  # Szerokość podstawy płomienia
+        emit_x = self.x + random.uniform(-base_width/2, base_width/2)
+        emit_y = self.y
+        
+        # Im dalej od środka, tym bardziej skośny płomień
+        distance_from_center = abs(emit_x - self.x) / (base_width/2)
+        
+        # Kąt zależy od pozycji na podstawie
+        angle_bias = distance_from_center * math.pi / 8  # Większy kąt na brzegach
+        if emit_x < self.x:
+            angle_bias = -angle_bias
+        
+        # === KROK 3: Flickering - migotanie płomienia ===
+        # Flickering effect - płomień pulsuje z różnymi częstotliwościami
+        flicker_fast = math.sin(time.time() * 8) * 0.3    # Szybkie migotanie
+        flicker_slow = math.sin(time.time() * 3) * 0.2    # Wolne pulsowanie
+        flicker_random = math.sin(time.time() * 12 + self.x * 0.1) * 0.1  # Losowe zakłócenia
+        
+        total_flicker = flicker_fast + flicker_slow + flicker_random
+        
+        # Zmodyfikuj parametry na podstawie flickering
+        speed_modifier = 1.0 + total_flicker * 0.5
+        angle_modifier = total_flicker * 0.3
+        size_modifier = 1.0 + total_flicker * 0.4
+        
+        # Podstawowy kąt z bias od pozycji i flickering
+        angle = random.uniform(-math.pi/4, math.pi/4) + angle_bias + angle_modifier
         base_angle = math.pi / 2
         angle += base_angle
-        speed = random.uniform(0.5, 2.0)
+        
+        # Prędkość z flickering
+        speed = random.uniform(0.5, 2.0) * speed_modifier
         vx = speed * math.cos(angle)
         vy = speed * math.sin(angle)
-        life = random.uniform(1.0, 3.0)
+        
+        # Życie - dalsze od środka żyją krócej
+        life_base = random.uniform(1.0, 3.0)
+        life = life_base * (1.0 - distance_from_center * 0.3)  # Brzegi żyją 30% krócej
+        
+        # Rozmiar z flickering i pozycją
+        size_base = random.uniform(0.5, 2.0)
+        size = size_base * size_modifier * (1.0 + distance_from_center * 0.2)  # Brzegi nieco większe
+        
         particle = Particle(
-            self.x, 
-            self.y, 
+            emit_x,  # Używamy pozycji z szerokiej podstawy
+            emit_y, 
             vx, 
             vy, 
             life, 
-            size=random.uniform(0.5, 2.0),  # Random size
-            color = FIRE_COLORS[random.randint(0, len(FIRE_COLORS) - 1)]  # Random color from FIRE_COLORS
+            size=size,
+            color = FIRE_COLORS[random.randint(0, len(FIRE_COLORS) - 1)]
         )
         self.particles.append(particle)
     def update(self, dt):
