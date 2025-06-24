@@ -23,3 +23,15 @@ SCREEN_CONFIG = {
     'height': 600,
     'title': 'PyroSprite Fire Simulation'
 }    
+
+# ...existing code...
+
+PARTICLE_CONFIG = {
+    'atlas_path': 'textures/particle_atlas.png',
+    'frame_width': 42,
+    'frame_height': 0,
+    'atlas_cols': 21,
+    'atlas_rows': 37,
+}
+
+# ...existing code...

@@ -10,41 +10,29 @@ class Emitter:
         self.y = y
         self.emit_rate = emit_rate
         self.particles = []
-        self.emit_accum = 0  # accumulated time for emission
+        self.emit_accum = 0  
     def emit(self):
-        # === KROK 2: Emisja z szerokiej podstawy ===
-        # Emisja z szerokiej podstawy zamiast punktu
-        base_width = 30  # Szerokość podstawy płomienia
+        base_width = 30 
         emit_x = self.x + random.uniform(-base_width/2, base_width/2)
         emit_y = self.y
-        
-        # Im dalej od środka, tym bardziej skośny płomień
+              # Im dalej od środka, tym bardziej skośny płomień
         distance_from_center = abs(emit_x - self.x) / (base_width/2)
         
-        # Kąt zależy od pozycji na podstawie
+      
         angle_bias = distance_from_center * math.pi / 8  # Większy kąt na brzegach
         if emit_x < self.x:
             angle_bias = -angle_bias
-        
-        # === KROK 3: Flickering - migotanie płomienia ===
-        # Flickering effect - płomień pulsuje z różnymi częstotliwościami
         flicker_fast = math.sin(time.time() * 8) * 0.3    # Szybkie migotanie
         flicker_slow = math.sin(time.time() * 3) * 0.2    # Wolne pulsowanie
-        flicker_random = math.sin(time.time() * 12 + self.x * 0.1) * 0.1  # Losowe zakłócenia
+        flicker_random = math.sin(time.time() * 12 + self.x * 0.1) * 0.1  # Losowe zakłócenia (bo ładnie wygląda)
         
         total_flicker = flicker_fast + flicker_slow + flicker_random
-        
-        # Zmodyfikuj parametry na podstawie flickering
         speed_modifier = 1.0 + total_flicker * 0.5
         angle_modifier = total_flicker * 0.3
         size_modifier = 1.0 + total_flicker * 0.4
-        
-        # Podstawowy kąt z bias od pozycji i flickering
         angle = random.uniform(-math.pi/4, math.pi/4) + angle_bias + angle_modifier
         base_angle = math.pi / 2
         angle += base_angle
-        
-        # Prędkość z flickering
         speed = random.uniform(0.5, 2.0) * speed_modifier
         vx = speed * math.cos(angle)
         vy = speed * math.sin(angle)
