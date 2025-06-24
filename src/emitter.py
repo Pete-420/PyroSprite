@@ -12,7 +12,10 @@ class Emitter:
         self.emit_accum = 0  # accumulated time for emission
     def emit(self):
         # simple particle emission logic, random vector and speed and life
-        angle = random.uniform(0, 2 * 3.14159)  # Random angle in radians
+        #angle = random.uniform(0, 2 * 3.14159)  # Random angle in radians
+        angle = random.uniform(-math.pi / 4, math.pi / 4)  # Limit angle to a range for upward emission
+        base_angle = math.pi / 2
+        angle += base_angle
         speed = random.uniform(0.5, 2.0)
         vx = speed * math.cos(angle)
         vy = speed * math.sin(angle)
@@ -29,6 +32,10 @@ class Emitter:
         self.particles.append(particle)
     def update(self, dt):
         self.emit_accum += dt *self.emit_rate
+        #turbulence_x = math.sin(time.time() * 2 + self.x * 0.1) * 0.5
+        #turbulence_y = math.cos(time.time() * 1.5 + self.y * 0.1) * 0.3
+        #self.vx += turbulence_x * dt
+        #self.vy += turbulence_y * dt
         while self.emit_accum >= 1.0:
             self.emit()
             self.emit_accum -= 1.0
