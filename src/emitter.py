@@ -1,6 +1,6 @@
 import random
 import math
-from .particle import Particle
+from .particle import *
 from .config import *
 import numpy as np 
 import OpenGL.GL as gl
@@ -15,7 +15,7 @@ class Emitter:
         self.emit_rate = emit_rate
         self.particles = []
         self.emit_accum = 0  # accumulated time for emission
-        
+
     def emit(self):
         # simple particle emission logic, random vector and speed and life
         angle = random.uniform(0, 2 * 3.14159)  # Random angle in radians

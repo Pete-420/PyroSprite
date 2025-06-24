@@ -15,3 +15,4 @@ PARTICLE_CONFIG = {
 width = 1920
 height = 1080
 
+filename = 'src/pernice.jpg'  # <-- podaj poprawną ścieżkę do pliku!
