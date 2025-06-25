@@ -20,7 +20,7 @@ class Emitter:
         
         # Im dalej od środka, tym bardziej skośny płomień
         distance_from_center = abs(emit_x - self.x) / (base_width/2)
-        angle_bias = distance_from_center * math.pi / 8  # 🔧 DODANE
+        angle_bias = distance_from_center * math.pi / 8  
         if emit_x < self.x:
             angle_bias = -angle_bias
             
@@ -32,8 +32,6 @@ class Emitter:
         speed_modifier = 1.0 + total_flicker * 0.5
         angle_modifier = total_flicker * 0.3
         size_modifier = 1.0 + total_flicker * 0.4
-        
-        # 🔧 POPRAWIONE: Różne parametry bez nadpisywania
         if is_small_pice_of_fire: #iskierka
             speed = random.uniform(2.0, 4.0) * speed_modifier
             angle = random.uniform(-math.pi/3, math.pi/3) + angle_bias 
@@ -51,16 +49,10 @@ class Emitter:
         
         vx = speed * math.cos(angle)
         vy = speed * math.sin(angle)
-        
-        # 🔧 POPRAWIONE: Użyj już ustawionych wartości
         life = life_base * (1.0 - distance_from_center * 0.3)
         size = size_base * size_modifier * (1.0 + distance_from_center * 0.2)
-        
         particle = Particle(emit_x, emit_y, vx, vy, life, size=size, color=color)
-        
-        # 🔧 DODANE: Oznacz typ cząstki
         particle.is_ember = is_small_pice_of_fire
-        
         self.particles.append(particle)
     def update(self, dt):
         self.emit_accum += dt *self.emit_rate

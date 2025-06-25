@@ -20,11 +20,10 @@ def main():
         maintain_aspect=BACKGROUND_CONFIG['maintain_aspect']
     )
     
-    # Create emitter in center-bottom of screen
-    emitter_x = SCREEN_CONFIG['width'] // 2
-    emitter_y = SCREEN_CONFIG['height'] - 50  # Near bottom
-    emitter = Emitter(emitter_x, emitter_y, emit_rate=50)
-    
+
+    fireplace_x = SCREEN_CONFIG['width'] // 2
+    fireplace_y = (SCREEN_CONFIG['height'] - 90)  
+    emitter = Emitter(fireplace_x, fireplace_y, emit_rate=50)
 #    # Inicjalizacja atlasu płomieni
 #    atlas = ParticleAtlas(
 #        texture_path="textures/j.png",
@@ -47,10 +46,11 @@ def main():
     print("  + - Increase emit rate")
     print("  - - Decrease emit rate")
     print("  Mouse - Move emitter")
+    print("  G - mouse grab mode")
     
     paused = False
     show_debug = True
-    
+    mouse_grabbed = False
     running = True
     while running:
         dt = clock.tick(60) / 3000.0  # Convert to seconds
@@ -74,7 +74,15 @@ def main():
                 elif event.key == pygame.K_d:
                     show_debug = not show_debug
                     print(f"Debug info: {'ON' if show_debug else 'OFF'}")
-            elif event.type == pygame.MOUSEMOTION:
+                elif event.key == pygame.K_g:
+                    mouse_grabbed = not mouse_grabbed
+                    if(not mouse_grabbed):
+                        emitter.x = fireplace_x
+                        emitter.y = fireplace_y
+                        print("fire locked to foreplace")
+                    else:
+                        print("fire stick to mouse! be careful!")
+            elif event.type == pygame.MOUSEMOTION and mouse_grabbed:
                 # Move emitter to mouse position
                 emitter.x, emitter.y = event.pos
         
