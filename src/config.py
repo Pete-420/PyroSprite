@@ -24,14 +24,10 @@ SCREEN_CONFIG = {
     'title': 'PyroSprite Fire Simulation'
 }    
 
-# ...existing code...
-
 PARTICLE_CONFIG = {
-    'atlas_path': 'textures/particle_atlas.png',
-    'frame_width': 42,
-    'frame_height': 0,
-    'atlas_cols': 21,
-    'atlas_rows': 37,
+    'atlas_path': 'textures/j.png',
+    'frame_width': 219,
+    'frame_height': 1024,
+    'atlas_cols': 7,
+    'atlas_rows': 1,
 }
-
-# ...existing code...
