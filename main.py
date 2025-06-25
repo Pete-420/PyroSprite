@@ -2,7 +2,7 @@ import pygame
 import sys
 from src.background import Background
 from src.emitter import Emitter
-from src.config import BACKGROUND_CONFIG, SCREEN_CONFIG
+from src.config import BACKGROUND_CONFIG, SCREEN_CONFIG, PARTICLE_CONFIG
 from src.particleAtlas import ParticleAtlas
 
 def main():
@@ -25,14 +25,21 @@ def main():
     emitter_y = SCREEN_CONFIG['height'] - 50  # Near bottom
     emitter = Emitter(emitter_x, emitter_y, emit_rate=50)
     
-    # Inicjalizacja atlasu płomieni
+#    # Inicjalizacja atlasu płomieni
+#    atlas = ParticleAtlas(
+#        texture_path="textures/j.png",
+#        frame_width=307,   # 1536 / 5
+#        frame_height=1024, # cały obraz
+#        cols=7,
+#        rows=1
+#    )
     atlas = ParticleAtlas(
-        texture_path="textures/j.png",
-        frame_width=307,   # 1536 / 5
-        frame_height=1024, # cały obraz
-        cols=5,
-        rows=1
-    )
+        texture_path=PARTICLE_CONFIG['atlas_path'],
+        frame_width=PARTICLE_CONFIG['frame_width'],
+        frame_height=PARTICLE_CONFIG['frame_height'],
+        cols=PARTICLE_CONFIG['atlas_cols'],
+        rows=PARTICLE_CONFIG['atlas_rows']
+    )  
     
     print("Controls:")
     print("  ESC - Exit")
@@ -46,7 +53,7 @@ def main():
     
     running = True
     while running:
-        dt = clock.tick(60) / 500.0  # Convert to seconds
+        dt = clock.tick(60) / 3000.0  # Convert to seconds
         
         # Handle events
         for event in pygame.event.get():
@@ -59,7 +66,7 @@ def main():
                     paused = not paused
                     print(f"Simulation {'PAUSED' if paused else 'RESUMED'}")
                 elif event.key == pygame.K_PLUS or event.key == pygame.K_EQUALS:
-                    emitter.emit_rate = min(emitter.emit_rate + 5, 1000)
+                    emitter.emit_rate = min(emitter.emit_rate + 10, 1000)
                     print(f"Emit rate: {emitter.emit_rate}")
                 elif event.key == pygame.K_MINUS:
                     emitter.emit_rate = max(emitter.emit_rate - 5, 1)
@@ -84,18 +91,30 @@ def main():
         # 2. Render particles as flame sprites from atlas
         for i, particle in enumerate(emitter.particles):
             if particle.is_alive() and atlas.is_loaded:
-                # Wybierz klatkę animacji (np. losowo lub na podstawie życia)
-                # Tu: 0-4 płomienie, 5 dymek (opcjonalnie na końcu życia)
-                if particle.life / particle.max_life < 0.5:
-                    frame_idx = 5  # dymek
+                life_ratio = particle.life / particle.max_life
+                scale_w = max(8, int(particle.size * 24))
+                
+                # Różne renderowanie dla iskierek i płomieni
+                if hasattr(particle, 'is_ember') and particle.is_ember:
+                    # Iskry: używaj klatek dymu (5-6) i kwadratowy kształt
+                    frame_idx = 5 if life_ratio > 0.5 else 6
+                    scale_h = scale_w  # 1:1 ratio dla iskier (kwadrat)
                 else:
-                    frame_idx = i % 5  # płomienie 0-4
-
+                    # Normalne płomienie: klatki 0-4 z progresją życia
+                    if life_ratio > 0.8:
+                        frame_idx = 0
+                    elif life_ratio > 0.6:
+                        frame_idx = 1
+                    elif life_ratio > 0.4:
+                        frame_idx = 2
+                    elif life_ratio > 0.2:
+                        frame_idx = 3
+                    else:
+                        frame_idx = 4
+                    scale_h = scale_w * 3  # 1:3 ratio dla płomieni (wysoki)
+                
                 frame = atlas.get_frame(frame_idx)
                 if frame:
-                    # Dopasuj rozmiar sprite do particle.size, ale wysokość 2x większa niż szerokość
-                    scale_w = max(8, int(particle.size * 24))
-                    scale_h = scale_w * 4
                     sprite = pygame.transform.smoothscale(frame, (scale_w, scale_h))
                     # Ustaw alpha zgodnie z particle.color[3]
                     sprite.set_alpha(int(particle.color[3] * 255))
@@ -123,7 +142,10 @@ def main():
             # Emitter position
             text4 = font.render(f"Emitter: ({emitter.x:.0f}, {emitter.y:.0f})", True, (255, 255, 255))
             screen.blit(text4, (10, 85))
-            
+                        # W debug info
+            ember_count = sum(1 for p in emitter.particles if hasattr(p, 'is_ember') and p.is_ember)
+            text6 = font.render(f"Embers: {ember_count}", True, (255, 255, 255))
+            screen.blit(text6, (10, 110))
             # Paused status
             if paused:
                 text5 = font.render("PAUSED", True, (255, 255, 0))

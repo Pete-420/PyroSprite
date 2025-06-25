@@ -8,11 +8,12 @@ class Particle:
         self.max_life = life
         self.size = size
         self.color = color
-        self.gravity = -10  # Gravity effect on the particle
+        self.gravity = -50  # Gravity effect on the particle
+        
     def update(self, dt):
         self.vy += self.gravity * dt
-        self.x += self.vx * dt
-        self.y += self.vy * dt
+        self.x += self.vx * dt *0.98
+        self.y += self.vy * dt *0.90
         self.life -= dt
         if self.life < 0:
             self.life = 0
