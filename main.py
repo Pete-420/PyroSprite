@@ -2,7 +2,7 @@ import pygame
 import sys
 from src.background import Background
 from src.emitter import Emitter
-from src.config import BACKGROUND_CONFIG, SCREEN_CONFIG, PARTICLE_CONFIG
+from src.config import BACKGROUND_CONFIG, SCREEN_CONFIG, PARTICLE_CONFIG, BACKGROUND_ATLAS_CONFIG
 from src.particleAtlas import ParticleAtlas
 
 def main():
@@ -13,16 +13,17 @@ def main():
     pygame.display.set_caption(SCREEN_CONFIG['title'])
     clock = pygame.time.Clock()
     
-    # Create background
+    # Create animated background
     background = Background(
-        texture_path=BACKGROUND_CONFIG['texture_path'],
+        atlas_config=BACKGROUND_ATLAS_CONFIG,
         scale_to_screen=BACKGROUND_CONFIG['scale_to_screen'],
-        maintain_aspect=BACKGROUND_CONFIG['maintain_aspect']
+        maintain_aspect=BACKGROUND_CONFIG['maintain_aspect'],
+        animation_speed=0.2  # Adjust speed as needed (seconds per frame)
     )
     
 
     fireplace_x = SCREEN_CONFIG['width'] // 2
-    fireplace_y = (SCREEN_CONFIG['height'] - 90)  
+    fireplace_y = (SCREEN_CONFIG['height'] - 115)  
     emitter = Emitter(fireplace_x, fireplace_y, emit_rate=50)
 #    # Inicjalizacja atlasu płomieni
 #    atlas = ParticleAtlas(
@@ -53,7 +54,7 @@ def main():
     mouse_grabbed = False
     running = True
     while running:
-        dt = clock.tick(60) / 3000.0  # Convert to seconds
+        dt = clock.tick(60) / 1000.0  # Convert to seconds
         
         # Handle events
         for event in pygame.event.get():
@@ -85,15 +86,11 @@ def main():
             elif event.type == pygame.MOUSEMOTION and mouse_grabbed:
                 # Move emitter to mouse position
                 emitter.x, emitter.y = event.pos
-        
-        # Update simulation
         if not paused:
+            background.update(dt)  # Update background animation
             emitter.update(dt)
         
-        # Render everything
         screen.fill((0, 0, 0))  # Clear screen
-        
-        # 1. Render background
         background.render(screen)
         
         # 2. Render particles as flame sprites from atlas
@@ -154,7 +151,6 @@ def main():
             ember_count = sum(1 for p in emitter.particles if hasattr(p, 'is_ember') and p.is_ember)
             text6 = font.render(f"Embers: {ember_count}", True, (255, 255, 255))
             screen.blit(text6, (10, 110))
-            # Paused status
             if paused:
                 text5 = font.render("PAUSED", True, (255, 255, 0))
                 screen.blit(text5, (SCREEN_CONFIG['width'] - 80, 10))

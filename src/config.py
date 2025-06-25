@@ -7,7 +7,7 @@ FIRE_COLORS = [
 ]
 
 PARTICLE_CONFIG = {
-  ## toDo
+  ## toDo tera jest hardcode ale działa. 
 }
 
 # Background configuration
@@ -19,9 +19,9 @@ BACKGROUND_CONFIG = {
 
 # Screen configuration  
 SCREEN_CONFIG = {
-    'width': 800,
-    'height': 600,
-    'title': 'PyroSprite Fire Simulation'
+    'width': 773,
+    'height': 765,
+    'title': 'PyroSprites - Fire Particle System',
 }    
 
 PARTICLE_CONFIG = {
@@ -30,4 +30,12 @@ PARTICLE_CONFIG = {
     'frame_height': 1024,
     'atlas_cols': 7,
     'atlas_rows': 1,
+}
+
+BACKGROUND_ATLAS_CONFIG = {
+    'atlas_background_path': 'textures/background_atlas.png',
+    'frame_width':773,
+    'frame_height': 765,
+    'atlas_cols': 4,
+    'atlas_rows': 2,
 }
