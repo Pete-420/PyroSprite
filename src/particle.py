@@ -34,5 +34,6 @@ class Particle:
         self.size = size
         self.color = color
         self.gravity = -50
+        self.is_ember = False
     
     
