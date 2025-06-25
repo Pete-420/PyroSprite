@@ -3,16 +3,22 @@ import math
 import time
 from .particle import Particle
 from .config import FIRE_COLORS
+from .particlePool import ParticlePool
 
 class Emitter:
-    def __init__(self, x, y, emit_rate=10):
+    def __init__(self, x, y, emit_rate=10, max_particles=1000):
         self.x = x
         self.y = y
         self.emit_rate = emit_rate
-        self.particles = []
+        #self.particles = []
         self.emit_accum = 0  
+        self.particle_pool = ParticlePool(max_particles)
     def emit(self):
         base_width = 30 
+        
+        particle = self.particle_pool.get_particle()
+        if not particle:
+            return #basen jest pełny, nie emitować więcej cząstek
         emit_x = self.x + random.uniform(-base_width/2, base_width/2)
         emit_y = self.y
         
@@ -51,19 +57,26 @@ class Emitter:
         vy = speed * math.sin(angle)
         life = life_base * (1.0 - distance_from_center * 0.3)
         size = size_base * size_modifier * (1.0 + distance_from_center * 0.2)
-        particle = Particle(emit_x, emit_y, vx, vy, life, size=size, color=color)
+        #particle = Particle(emit_x, emit_y, vx, vy, life, size=size, color=color)
+        particle.reset(emit_x,emit_y, vx, vy, life, size, color)
+        # Ustaw dodatkowe właściwości dla iskierki
         particle.is_ember = is_small_pice_of_fire
-        self.particles.append(particle)
+        #self.particles.append(particle)
     def update(self, dt):
         self.emit_accum += dt *self.emit_rate
-        #turbulence_x = math.sin(time.time() * 2 + self.x * 0.1) * 0.5
-        #turbulence_y = math.cos(time.time() * 1.5 + self.y * 0.1) * 0.3
-        #self.vx += turbulence_x * dt
-        #self.vy += turbulence_y * dt
         while self.emit_accum >= 1.0:
             self.emit()
             self.emit_accum -= 1.0
-        for particle in self.particles:
-            particle.update(dt)
-        # Remove dead particles
-        self.particles = [p for p in self.particles if p.is_alive()]
+#        for particle in self.particles:
+#            particle.update(dt)
+        self.particle_pool.update_all(dt)
+
+    @property
+    def particles(self):
+        return self.particle_pool.active_particles
+    def get_particle_stats(self):
+        return {
+            'active': self.particle_pool.get_active_count(),
+            'available': self.particle_pool.get_available_count(),
+            'total': self.particle_pool.max_particles
+        }

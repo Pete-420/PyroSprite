@@ -6,8 +6,10 @@ FIRE_COLORS = [
     (0.9, 0.1, 0.1, 1.0),  # Deep red
 ]
 
-PARTICLE_CONFIG = {
-  ## toDo tera jest hardcode ale działa. 
+EMMITTER_CONFIG = {
+    'limit' : 2500,  # Maximum number of particles
+    'emmit_rate': 50,  # Particles emitted per second
+    'emmit_++': 25, # Additional particles emitted per second
 }
 
 # Background configuration
