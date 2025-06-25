@@ -10,5 +10,28 @@ PARTICLE_CONFIG = {
   ## toDo
 }
 
+# Background configuration
+BACKGROUND_CONFIG = {
+    'texture_path': 'textures/fire_background.png',  # Path to static background (relative to project root)
+    'scale_to_screen': True,  # Scale background to fit screen
+    'maintain_aspect': True   # Keep original aspect ratio when scaling
+}
 
-#TOdo screen resolution etc.    
+# Screen configuration  
+SCREEN_CONFIG = {
+    'width': 800,
+    'height': 600,
+    'title': 'PyroSprite Fire Simulation'
+}    
+
+# ...existing code...
+
+PARTICLE_CONFIG = {
+    'atlas_path': 'textures/particle_atlas.png',
+    'frame_width': 42,
+    'frame_height': 0,
+    'atlas_cols': 21,
+    'atlas_rows': 37,
+}
+
+# ...existing code...
