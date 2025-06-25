@@ -3,6 +3,7 @@ import sys
 from src.background import Background
 from src.emitter import Emitter
 from src.config import BACKGROUND_CONFIG, SCREEN_CONFIG
+from src.particleAtlas import ParticleAtlas
 
 def main():
     pygame.init()
@@ -22,7 +23,16 @@ def main():
     # Create emitter in center-bottom of screen
     emitter_x = SCREEN_CONFIG['width'] // 2
     emitter_y = SCREEN_CONFIG['height'] - 50  # Near bottom
-    emitter = Emitter(emitter_x, emitter_y, emit_rate=20)
+    emitter = Emitter(emitter_x, emitter_y, emit_rate=50)
+    
+    # Inicjalizacja atlasu płomieni
+    atlas = ParticleAtlas(
+        texture_path="textures/j.png",
+        frame_width=307,   # 1536 / 5
+        frame_height=1024, # cały obraz
+        cols=5,
+        rows=1
+    )
     
     print("Controls:")
     print("  ESC - Exit")
@@ -71,37 +81,26 @@ def main():
         # 1. Render background
         background.render(screen)
         
-        # 2. Render particles as simple circles (temporary until we get textures)
-        for particle in emitter.particles:
-            if particle.is_alive():
-                # Convert color from 0-1 range to 0-255
-                color = (
-                    int(particle.color[0] * 255),
-                    int(particle.color[1] * 255), 
-                    int(particle.color[2] * 255)
-                )
-                
-                # Draw particle as circle with alpha blending
-                alpha = int(particle.color[3] * 255)
-                if alpha > 0:
-                    # Create surface for alpha blending
-                    particle_surface = pygame.Surface((particle.size * 4, particle.size * 4))
-                    particle_surface.set_alpha(alpha)
-                    particle_surface.fill(color)
-                    
-                    # Draw circle on the surface
-                    pygame.draw.circle(
-                        particle_surface, 
-                        color, 
-                        (particle.size * 2, particle.size * 2), 
-                        int(particle.size)
-                    )
-                    
-                    # Blit to screen
-                    screen.blit(
-                        particle_surface, 
-                        (particle.x - particle.size * 2, particle.y - particle.size * 2)
-                    )
+        # 2. Render particles as flame sprites from atlas
+        for i, particle in enumerate(emitter.particles):
+            if particle.is_alive() and atlas.is_loaded:
+                # Wybierz klatkę animacji (np. losowo lub na podstawie życia)
+                # Tu: 0-4 płomienie, 5 dymek (opcjonalnie na końcu życia)
+                if particle.life / particle.max_life < 0.5:
+                    frame_idx = 5  # dymek
+                else:
+                    frame_idx = i % 5  # płomienie 0-4
+
+                frame = atlas.get_frame(frame_idx)
+                if frame:
+                    # Dopasuj rozmiar sprite do particle.size, ale wysokość 2x większa niż szerokość
+                    scale_w = max(8, int(particle.size * 24))
+                    scale_h = scale_w * 4
+                    sprite = pygame.transform.smoothscale(frame, (scale_w, scale_h))
+                    # Ustaw alpha zgodnie z particle.color[3]
+                    sprite.set_alpha(int(particle.color[3] * 255))
+                    # Wyśrodkuj sprite na pozycji cząstki
+                    screen.blit(sprite, (particle.x - scale_w // 2, particle.y - scale_h // 2))
         
         # 3. Render debug info
         if show_debug:
